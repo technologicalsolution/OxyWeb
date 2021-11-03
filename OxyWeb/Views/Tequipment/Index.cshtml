@@ -1,0 +1,305 @@
+﻿@model OxyWeb.ViewModels.ViewEquipment
+
+@{
+    ViewData["Title"] = "List Equipments";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container-md">
+    <div class="row justify-content-between p-2 my-2 text-white rounded shadow-sm title-page">
+        <div class="col-12 col-md-2">
+            <h5>Equipment</h5>
+        </div>
+        <div class="col-12 col-md-2">
+            <div class="row align-items-end">
+                <button class="btn btn-primary" id="btn-create"><i class="me-3 bi bi-plus-square"></i>Create</button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 table-responsive">
+            <table id="tableFull" class="table table-striped" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Vendor</th>
+                        <th>Nro.</th>
+                        <th>EquipmentType</th>
+                        <th>PartNumber</th>
+                        <th>SerialNumber</th>
+                        <th>EquipmentDescription</th>
+                        <th>EquipmentTag</th>
+                        <th>EqpTagDate</th>
+                        <th>EqpPrice</th>
+                        <th width="30%">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Lista)
+                    {
+                        <tr>
+                            <td>@item.TvendorName</td>
+                            <td>@item.id</td>
+                            <td>@item.EquipmentType</td>
+                            <td>@item.PartNumber</td>
+                            <td>@item.SerialNumber</td>
+                            <td>@item.EquipmentDescription</td>
+                            <td>@item.EquipmentTag</td>
+                            <td>@item.EqpTagDate</td>
+                            <td>@item.EqpPrice</td>
+                            <td>
+                                <div class="row">
+                                    <div class="col-12 col-md-6">
+                                        <input type="hidden" value="@Json.Serialize(item).ToString()" />
+                                        <button type="button" class="btn btn-secondary" onclick="Update(this)">Update</button>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <input type="hidden" value="@Json.Serialize(item).ToString()" />
+                                        <button type="button" class="btn btn-danger" onclick="Delete(this)">Delete</button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ModalEquipment" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="NewEquipmentLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="NewEquipmentLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="Pass">EquipmentType</label>
+                            @Html.TextBoxFor(m => m.Modelo.EquipmentType, new { @class = "form-control mt-2", onkeyup = "lengthText(this, 20,'TxtLenEquipmentType')", onkeydown = "lengthText(this, 20,'TxtLenEquipmentType')", placeholder = "Enter your Equipment Type" })
+                            <div class="form-text"><strong id="TxtLenEquipmentType">0</strong>/20</div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">Vendors</label>
+                            <div class="col-md-12 mt-2">
+                                <select id="Modelo_VendorID" name="Modelo.VendorID" class="form-select" data-init-plugin="select2" style="width:100%"></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="Pass">EquipmentDescription</label>
+                            @Html.TextBoxFor(m => m.Modelo.EquipmentDescription, new { @class = "form-control mt-2", onkeyup = "lengthText(this, 50,'TxtLenEquipmentDescription')", onkeydown = "lengthText(this, 50,'TxtLenEquipmentDescription')", placeholder = "Enter your Equipment Description" })                            
+                            <div class="form-text"><strong id="TxtLenEquipmentDescription">0</strong>/50</div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="Pass">EquipmentTag</label>
+                            @Html.TextBoxFor(m => m.Modelo.EquipmentTag, new { @class = "form-control mt-2", onkeyup = "lengthText(this, 50,'TxtLenEquipmentTag')", onkeydown = "lengthText(this, 50,'TxtLenEquipmentTag')", placeholder = "Enter your Equipment Tag" })                            
+                            <div class="form-text"><strong id="TxtLenEquipmentTag">0</strong>/50</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="Pass">PartNumber</label>
+                            @Html.TextBoxFor(m => m.Modelo.PartNumber, new { @class = "form-control mt-2", onkeyup = "lengthText(this, 10,'TxtLenPartNumber')", onkeydown = "lengthText(this, 10,'TxtLenPartNumber')", placeholder = "Enter your Part Number" })                            
+                            <div class="form-text"><strong id="TxtLenPartNumber">0</strong>/10</div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="Pass">SerialNumber</label>
+                            @Html.TextBoxFor(m => m.Modelo.SerialNumber, new { @class = "form-control mt-2", onkeyup = "lengthText(this, 10,'TxtLenSerialNumber')", onkeydown = "lengthText(this, 10,'TxtLenSerialNumber')", placeholder = "Enter your SerialNumber" })                            
+                            <div class="form-text"><strong id="TxtLenSerialNumber">0</strong>/10</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="Pass">EqpTagDate</label>
+                            @Html.TextBoxFor(m => m.Modelo.EqpTagDate, new { @type = "date", @class="form-control mt-2"})
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="Pass">EqpPrice</label>
+                            @Html.TextBoxFor(m => m.Modelo.EqpPrice, new { @type = "number", @class = "form-control mt-2" })                            
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        @if (Model.Modelo.idRol == (int)OxyWeb.Enums.UserRol.Root)
+                        {
+                            <div class="form-group">
+                                <label class="control-label">Rol</label>
+                                <div class="col-md-12 mt-2">
+                                    <select id="Modelo_idRol" name="Modelo.idRol" class="form-select" style="width:100%">
+                                        <option value="1">Baker</option>
+                                        <option value="2">Schlumberger</option>
+                                        <option value="3">Hall</option>
+                                        <option value="4">Borets</option>
+                                        <option value="5">HDE</option>
+                                    </select>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(m => m.Modelo.idRol)
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                @Html.HiddenFor(m => m.Modelo.id)
+                @Html.HiddenFor(m => m.Accion)                        
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btn-save">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="toast" role="alert" id="ToastDelete" aria-live="assertive" aria-atomic="true">
+    <div class="toast-body">
+        <p>want to delete <strong id="nameDelete"></strong>?</p>
+        <div class="mt-2 pt-2 border-top">
+            <button type="button" class="btn btn-primary btn-sm" id="btn-accept-delete">Delete</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="toast">Cancel</button>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        var Modal = new bootstrap.Modal(document.getElementById('ModalEquipment'), { keyboard: false });
+        var Toast = new bootstrap.Toast(document.getElementById('ToastDelete'), { positionClass: 'toast-top-center' });       
+
+        $(document).ready(function () {
+            LoadTable("tableFull");
+
+            $("#btn-create").click(function () {
+                $("#NewEquipmentLabel").text("New Equipment");
+                LoadVendors();
+                $("#Accion").val(0);
+                Modal.show();
+            });
+
+            $("#btn-save").click(function () {
+                var response;
+                var Parameters = {
+                    Accion: parseInt($("#Accion").val()),
+                    Modelo: {
+                        EquipmentType: $.trim($("#Modelo_EquipmentType").val()),
+                        VendorID: $.trim($("#Modelo_VendorID").val()),
+                        PartNumber: $.trim($("#Modelo_PartNumber").val()),
+                        SerialNumber: $.trim($("#Modelo_SerialNumber").val()),
+                        EquipmentDescription: $.trim($("#Modelo_EquipmentDescription").val()),
+                        EquipmentTag: $.trim($("#Modelo_EquipmentTag").val()),
+                        EqpTagDate: $.trim($("#Modelo_EqpTagDate").val()),
+                        EqpPrice: parseFloat($("#Modelo_EqpPrice").val()),
+                        idRol: parseInt($("#Modelo_idRol").val())
+                    }
+                };
+
+                if (Parameters.Accion == 0) {
+                    response = JSON.parse(CrudTable('@Url.Action("Crud", "Tequipment")', "POST", Parameters));
+                } else {
+                    Parameters['Modelo']['id'] = parseInt($("#Modelo_id").val());
+                    response = JSON.parse(CrudTable('@Url.Action("Crud", "Tequipment")', "POST", Parameters));
+                }
+                if (response != undefined) {
+                    if (response.Number != 200) {
+                        $("#Alert").show();
+                        console.log(response.Message);
+                    } else {
+                        location.reload();
+                    }
+                } else {
+                    Modal.hide();
+                }
+            });
+
+            $("#btn-accept-delete").click(function () {
+                var Parameters = {
+                    Id: parseInt($("#Modelo_VendorID").val()),                    
+                }
+
+                var response = CrudTable('@Url.Action("Crud", "Tequipment")', "DELETE", Parameters);
+                if (response != undefined) {
+                    if (response.Number != 200) {
+                        $("#Alert").show();
+                        console.log(response.Message);
+                    } else {
+                        location.reload();
+                    }
+                } else {
+                    Modal.hide();
+                }
+            });
+        })
+
+        function Update(item) {
+            LoadVendors();
+            var Data = JSON.parse(item.parentElement.firstElementChild.value);
+            $("#Modelo_id").val(Data.id);
+            $("#Modelo_EquipmentType").val(Data.equipmentType);
+            $("#TxtLenEquipmentType").text(Data.equipmentType.length);
+            $("#Modelo_EquipmentDescription").val(Data.equipmentDescription);
+            $("#TxtLenEquipmentDescription").text(Data.equipmentDescription.length);
+            $("#Modelo_EquipmentTag").val(Data.equipmentTag);
+            $("#TxtLenEquipmentTag").text(Data.equipmentTag.length);
+            $("#Modelo_PartNumber").val(Data.partNumber);
+            $("#TxtLenPartNumber").text(Data.partNumber.length);
+            $("#Modelo_SerialNumber").val(Data.serialNumber);
+            $("#TxtLenSerialNumber").text(Data.serialNumber.length);
+            $("#Modelo_VendorID").val(Data.vendorID);
+            var date = Data.eqpTagDate.split('T')
+            $("#Modelo_EqpTagDate").val(date[0]);
+            $("#Modelo_EqpPrice").val(Data.eqpPrice);
+
+            $("#Accion").val(2);
+            $("#NewEquipmentLabel").text("Update Equipment");
+            Modal.show();
+        }
+
+        function Delete(item) {
+            var Data = JSON.parse(item.parentElement.firstElementChild.value);
+            $("#IdEquipment").val(Data.id);
+            $("#nameDelete").text(Data.name);
+            Toast.show();
+        }
+
+        function LoadVendors() {
+            var idRol = $("#Modelo_idRol").val();
+            $.ajax({
+                url: '@Url.RouteUrl("AllVendor")/' + idRol ,
+                type: 'GET',
+                crossDomain: true,
+                dataType: 'json',
+                xhrFields: {
+                    withCredentials: true
+                },
+                success: function (result) {
+                    var Html = '';
+                    var Data = JSON.parse(result);
+                    $.each(Data, function (pos, item) {
+                        Html += '<option value="' + item.Id + '">' + $.trim(item.Name) + '</option>';
+                    })
+                    $("#Modelo_VendorID").html(Html);
+                },
+                error: function (data) {
+                    $("#Alert").show();
+                    console.log(data);
+                },
+            });
+        }
+    </script>
+}

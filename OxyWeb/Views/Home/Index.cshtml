@@ -1,0 +1,50 @@
+﻿@model OxyWeb.ViewModels.VLogin
+@{
+    ViewData["Title"] = "login";
+    Layout = "~/Views/Shared/_LayoutIndex.cshtml";
+}
+<div class="d-flex">
+    <div class="col-12 col-sm-4 d-none d-sm-block">
+        <img src="~/img/bg_auth_2.png" class="w-100 vh-100" style="object-fit: cover; object-position: left;" />
+    </div>
+    <div class="col-12 col-sm-8">
+        <section class="vh-100">
+            <div class="container-fluid h-100">
+                <div class="row align-items-center h-100">
+                    <div class="col-12">
+                        <div class="row">
+                            @using (Html.BeginForm("Index", "Home", FormMethod.Post))
+                            {
+                                <div class="col-12 col-sm-8 offset-sm-2 col-lg-6 offset-lg-3">
+                                    <div class="form-group mb-3">
+                                        <label for="Email">Email</label>
+                                        @Html.TextBoxFor(m => m.user, new { @class = "form-control", @type = "email", placeholder = "Enter your email" })
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <label for="Pass">Password</label>
+                                        @Html.TextBoxFor(m => m.pass, new { @class = "form-control", @type = "password", placeholder = "Enter your password" })
+                                    </div>
+                                    <div class="form-group mb-3">
+                                        <button type="submit" id="Signin" class="btn btn-info text-white" style="width:100%"> <i class="me-3 bi bi-door-open"></i>Sign-in</button>
+                                    </div>
+                                </div>
+                            }
+                            <div id="liveAlertPlaceholder"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        if (('@Model.Error').toUpperCase() == 'TRUE') {
+            alert('@Model.Mensaje');
+        }
+
+        function alert(message) {
+            $("#liveAlertPlaceholder").html('<div class="alert alert-danger alert-dismissible" role="alert">' + message + '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');            
+        }
+    </script>
+}

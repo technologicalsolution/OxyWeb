@@ -1,0 +1,95 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - OxyPresentation</title>
+    <link rel="stylesheet" href="~/lib/twitter-bootstrap/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="~/lib/datatables.net-bs5/dataTables.bootstrap5.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+
+    <header class="navbar navbar-light bg-light sticky-top flex-md-nowrap p-0 shadow">
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" asp-page="/Index">
+            <i class="bi bi-building"></i>
+            OXY
+        </a>
+        <button class="navbar-toggler position-absolute d-md-none" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="true" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </header>
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark"><strong>Equipments</strong></a>
+                        </li>
+                        <li class="border-top my-3"></li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="@Url.RouteUrl("vendor")"><i class="me-3 bi bi-building"></i>Vendor</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="@Url.RouteUrl("equipment")"><i class="me-3 bi bi-hammer"></i>Equipment</a>
+                        </li>
+                        <li class="border-top my-3"></li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark"><strong>Fields</strong></a>
+                        </li>
+                        <li class="border-top my-3"></li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="@Url.RouteUrl("field")"><i class="me-3 bi bi-map"></i>Field</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="@Url.RouteUrl("well")"><i class="me-3 bi bi-geo-fill"></i>Wells</a>
+                        </li>
+                        <li class="border-top my-3"></li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark"><strong>Other</strong></a>
+                        </li>
+                        <li class="border-top my-3"></li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="@Url.RouteUrl("cleaning")"><i class="me-3 bi bi-trash"></i>Cleaning</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="@Url.RouteUrl("events")"><i class="me-3 bi bi-calendar"></i>Events</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="@Url.RouteUrl("location")"><i class="me-3 bi bi-geo-alt"></i>Location</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="@Url.RouteUrl("user")"><i class="me-3 bi bi-people"></i>User</a>
+                        </li>
+                        <li class="border-top my-3"></li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark"  href="@Url.RouteUrl("LogOut")"><i class="me-3 bi bi-door-closed"></i>Sigin-Out</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                @RenderBody()
+                <div id="Alert" style="display:none">
+                    <div class="alert alert-warning alert-dismissible fade show align-items-center" role="alert">
+                        <div id="MessageError">Valid consonle, error response</div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/twitter-bootstrap/js/bootstrap.js"></script>
+    <script src="~/lib/datatables.net/jquery.dataTables.js"></script>
+    <script src="~/lib/datatables.net-bs5/dataTables.bootstrap5.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>  

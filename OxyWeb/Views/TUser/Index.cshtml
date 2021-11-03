@@ -1,0 +1,288 @@
+﻿@model OxyWeb.ViewModels.ViewUser
+
+@{
+    ViewData["Title"] = "List Users";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string status = string.Empty;
+}
+<div class="container-md">
+    <div class="row justify-content-between p-2 my-2 text-white rounded shadow-sm title-page">
+        <div class="col-12 col-md-2">
+            <h5>User</h5>
+        </div>
+        <div class="col-12 col-md-2">
+            <div class="row align-items-end">
+                <button class="btn btn-primary" id="btn-create"><i class="me-3 bi bi-plus-square"></i>Create</button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 table-responsive">
+            <table id="tableFull" class="table table-striped" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Rol</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th width="20%">Actions</th>
+                    </tr>
+                </thead>
+                @foreach (var item in Model.Lista)
+                {
+                    <tr>
+                        <td>@item.name</td>
+                        <td>@item.nameRol</td>
+                        <td>@item.user</td>
+                        <td>
+                            @{
+                                status = item.active ? "Active" : "Inactive";
+                            }
+                            @status
+                        </td>
+                        <td>
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <input type="hidden" value="@Json.Serialize(item).ToString()" />
+                                    <button type="button" class="btn btn-secondary" onclick="Update(this)">Update</button>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <input type="hidden" value="@Json.Serialize(item).ToString()" />
+                                    <button type="button" class="btn btn-danger" onclick="Delete(this)">Delete</button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ModalUser" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="NewUserLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="NewUserLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="Pass">Name</label>
+                            @Html.TextBoxFor(m => m.Modelo.name, new { @class = "form-control mt-2", onkeyup = "lengthText(this, 50,'TxtUser')", onkeydown = "lengthText(this, 50,'TxtUser')", placeholder = "Enter your name" })
+                            <div class="form-text"><strong id="TxtUser">0</strong>/50</div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="Pass">Last Name</label>
+                            @Html.TextBoxFor(m => m.Modelo.lastName, new { @class = "form-control mt-2", onkeyup = "lengthText(this, 50,'TxtLastName')", onkeydown = "lengthText(this, 50,'TxtLastName')", placeholder = "Enter your Last name" })
+                            <div class="form-text"><strong id="TxtLastName">0</strong>/50</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="NameUserLogin">User</label>
+                            @Html.TextBoxFor(m => m.Modelo.user, new { @type = "email", @class = "form-control mt-2", onkeyup = "lengthText(this, 50,'TxtLenUserLogin')", onkeydown = "lengthText(this, 50,'TxtLenUserLogin')", placeholder = "Enter your User" })
+                            <div class="form-text"><strong id="TxtLenUserLogin">0</strong>/50</div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="form-group mb-3">
+                            <label for="Pass">PassWord</label>
+                            @Html.TextBoxFor(m => m.Modelo.pass, new { @type = "password", @class = "form-control mt-2", onkeyup = "lengthText(this, 20,'TxtLenPass')", onkeydown = "lengthText(this, 20,'TxtLenPass')", placeholder = "Enter your Password" })
+                            <div class="form-text"><strong id="TxtLenPass">0</strong>/20</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label">Status</label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(m => m.Modelo.active, true, new { @class = "form-check-input", @checked = "@checked" })
+                                <label class="form-check-label" for="Modelo_active">
+                                    Active
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(m => m.Modelo.active, false, new { @class = "form-check-input" })
+                                <label class="form-check-label" for="Modelo_active">
+                                    Inactive
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        @if (Model.Modelo.idRol == (int)OxyWeb.Enums.UserRol.Root)
+                        {
+                            <div class="form-group">
+                                <label class="control-label">Rol</label>
+                                <div class="col-md-12 mt-2">
+                                    <select id="Modelo_idRol" name="Modelo.idRol" class="form-select" style="width:100%">
+                                        <option value="1">Baker</option>
+                                        <option value="2">Schlumberger</option>
+                                        <option value="3">Hall</option>
+                                        <option value="4">Borets</option>
+                                        <option value="5">HDE</option>
+                                    </select>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(m => m.Modelo.idRol)
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                @Html.HiddenFor(m => m.Modelo.Id)
+                @Html.HiddenFor(m => m.Accion)
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btn-save">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="toast" role="alert" id="ToastDelete" aria-live="assertive" aria-atomic="true">
+    <div class="toast-body">
+        <p>want to delete <strong id="nameDelete"></strong>?</p>
+        <div class="mt-2 pt-2 border-top">
+            <button type="button" class="btn btn-primary btn-sm" id="btn-accept-delete">Delete</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="toast">Cancel</button>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        var Modal = new bootstrap.Modal(document.getElementById('ModalUser'), { keyboard: false });
+        var Toast = new bootstrap.Toast(document.getElementById('ToastDelete'), { positionClass: 'toast-top-center' });
+
+        $(document).ready(function () {
+            LoadTable("tableFull");
+
+            $("#btn-create").click(function () {
+                $("#NewVendorLabel").text("New Cleaning");
+                $("#Modelo_Id").val("");
+                $("#Modelo_user").val("");
+                $("#Modelo_pass").val("");
+                $("#Modelo_name").val("");
+                $("#Modelo_lastName").val("");
+                checkedValue(true, "True");
+                $("#Accion").val(0);
+                Modal.show();
+            });
+
+            $("#btn-save").click(function () {
+                var response;
+                var Parameters = {
+                    Accion: parseInt($("#Accion").val()),
+                    Modelo: {
+                        user: $.trim($("#Modelo_user").val()),
+                        pass: $.trim($("#Modelo_pass").val()),
+                        idRol: parseInt($("#Modelo_idRol").val()),
+                        name: $.trim($("#Modelo_name").val()),
+                        lastName: $.trim($("#Modelo_lastName").val()),
+                        active: checkedValue(false, null),
+                    }
+                };
+
+                if (!validEmailFormat(Parameters.Modelo["user"])) {
+                    $("#MessageError").html("The user not contains email format required.");
+                    $("#Alert").show();
+                } else {
+                    $("#MessageError").html("Valid consonle, error response");
+
+                    if (Parameters.Accion == 0) {
+                        response = JSON.parse(CrudTable('@Url.Action("Crud", "TUser")', "POST", Parameters));
+                    } else {
+                        Parameters['Modelo']['Id'] = parseInt($("#Modelo_Id").val());
+                        response = JSON.parse(CrudTable('@Url.Action("Crud", "TUser")', "POST", Parameters));
+                    }
+
+                    if (response != undefined) {
+                        if (response.Number != 200) {                            
+                            $("#Alert").show();
+                            console.log(response.Message);
+                        } else {
+                            location.reload();
+                        }
+                    } else {
+                        Modal.hide();
+                    }
+                }
+
+            });
+
+            $("#btn-accept-delete").click(function () {
+                var Parameters = {
+                    Id: parseInt($("#Modelo_Id").val())
+                };
+
+                var response = JSON.parse(CrudTable('@Url.Action("Crud", "TUser")', "DELETE", Parameters));
+                if (response != undefined) {
+                    if (response.Number != 200) {
+                        $("#MessageError").html("Valid consonle, error response");
+                        $("#Alert").show();
+                        console.log(response.Message);
+                    } else {
+                        location.reload();
+                    }
+                } else {
+                    Modal.hide();
+                }
+            });
+        })
+
+        function Update(item) {
+            var Data = JSON.parse(item.parentElement.firstElementChild.value);
+            $("#Modelo_Id").val(Data.id);
+            $("#Modelo_user").val(Data.user);
+            $("#TxtLenUserLogin").text(Data.user.length);
+            $("#Modelo_pass").val(Data.pass);
+            $("#TxtLenPass").text(Data.pass.length);
+            $("#Modelo_name").val(Data.name);
+            $("#TxtUser").text(Data.name.length);
+            $("#Modelo_lastName").val(Data.lastName);
+            $("#TxtLastName").text(Data.lastName.length);
+            $("#Modelo_idRol").val(Data.idRol);
+            var active = Data.active ? "True" : "False";
+            checkedValue(true, active);
+
+            $("#Accion").val(2);
+            $("#NewUserLabel").text("Update User");
+            Modal.show();
+        }
+
+        function Delete(item) {
+            var Data = JSON.parse(item.parentElement.firstElementChild.value);
+            $("#Modelo_Id").val(Data.id);
+            $("#nameDelete").text(Data.name);
+            Toast.show();
+        }
+
+        function checkedValue(Set,value) {
+            var radio = document.getElementsByName("Modelo.active");
+
+            if (Set) {
+                $.each(radio, function (pos, item) {
+                    if (item.value == value) {
+                        item.checked = true;
+                    }
+                });
+            } else {
+                var result;
+                $.each(radio, function (pos, item) {
+                    if (item.checked) {
+                        result = item.value;
+                    }
+                });
+                return result;
+            }
+        }
+    </script>
+}

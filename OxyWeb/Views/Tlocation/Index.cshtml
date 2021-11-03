@@ -1,0 +1,195 @@
+﻿@model OxyWeb.ViewModels.ViewLocation
+
+@{
+    ViewData["Title"] = "List Locations";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-md">
+    <div class="row justify-content-between p-2 my-2 text-white rounded shadow-sm title-page">
+        <div class="col-12 col-md-2">
+            <h5>Location</h5>
+        </div>
+        <div class="col-12 col-md-2">
+            <div class="row align-items-end">
+                <button class="btn btn-primary" id="btn-create"><i class="me-3 bi bi-plus-square"></i>Create</button>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <table id="tableFull" class="table table-striped" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Nro.</th>
+                        <th>Location</th>
+                        <th width="30%">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Lista)
+                    {
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.location</td>
+                            <td>
+                                <div class="row text-center">
+                                    <div class="col-12 col-md-6">
+                                        <input type="hidden" value="@Json.Serialize(item).ToString()" />
+                                        <button type="button" class="btn btn-secondary" onclick="Update(this)">Update</button>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <input type="hidden" value="@Json.Serialize(item).ToString()" />
+                                        <button type="button" class="btn btn-danger" onclick="Delete(this)">Delete</button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ModalVendor" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="NewVendorLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="NewVendorLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group mb-3">
+                            <label for="Pass">Location</label>
+                            @Html.TextBoxFor(m => m.Modelo.location, new { @class = "form-control mt-2", onkeyup = "lengthText(this, 20,'TxtLen')", onkeydown = "lengthText(this, 20,'TxtLen')", placeholder = "Enter your Location Name" })
+                            <div class="form-text"><strong id="TxtLen">0</strong>/20</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        @if (Model.Modelo.idRol == (int)OxyWeb.Enums.UserRol.Root)
+                        {
+                            <div class="form-group">
+                                <label class="control-label">Rol</label>
+                                <div class="col-md-12 mt-2">
+                                    <select id="Modelo_idRol" name="Modelo.idRol" class="form-select" style="width:100%">
+                                        <option value="1">Baker</option>
+                                        <option value="2">Schlumberger</option>
+                                        <option value="3">Hall</option>
+                                        <option value="4">Borets</option>
+                                        <option value="5">HDE</option>
+                                    </select>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            @Html.HiddenFor(m => m.Modelo.idRol)
+                        }
+                    </div>
+                </div>               
+            </div>
+            <div class="modal-footer">
+                @Html.HiddenFor(m => m.Accion)
+                @Html.HiddenFor(m => m.Modelo.Id)                
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="btn-save">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="toast" role="alert" id="ToastDelete" aria-live="assertive" aria-atomic="true">
+    <div class="toast-body">
+        <p>want to delete <strong id="nameDelete"></strong>?</p>
+        <div class="mt-2 pt-2 border-top">
+            <button type="button" class="btn btn-primary btn-sm" id="btn-accept-delete">Delete</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="toast">Cancel</button>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        var Modal = new bootstrap.Modal(document.getElementById('ModalVendor'), { keyboard: false });        
+        var Toast = new bootstrap.Toast(document.getElementById('ToastDelete'), { positionClass: 'toast-top-center' });
+
+        $(document).ready(function () {
+            LoadTable("tableFull");
+
+            $("#btn-create").click(function () {
+                $("#NewVendorLabel").text("New Location");
+                $("#Modelo_Id").val("");
+                $("#Modelo_location").val("");
+                $("#Accion").val(0);
+                Modal.show();
+            });
+
+            $("#btn-save").click(function () {
+                var response;
+                var Parameters = {
+                    Accion: parseInt($("#Accion").val()),
+                    Modelo: {
+                        location: $("#Modelo_location").val(),
+                        idRol: $("#Modelo_idRol").val()
+                    }
+                };
+
+                if (Parameters.Accion == 0) {
+                    response = JSON.parse(CrudTable('@Url.Action("Crud", "TLocation")', "POST", Parameters));
+                } else {
+                    Parameters['Modelo']['Id'] = parseInt($("#Modelo_Id").val());
+                    response = JSON.parse(CrudTable('@Url.Action("Crud", "TLocation")', "POST", Parameters));
+                }
+
+                if (response != undefined) {
+                    if (response.Number != 200) {
+                        $("#Alert").show();
+                        console.log(response.Message);
+                    } else {
+                        location.reload();
+                    }
+                } else {
+                    Modal.hide();
+                }
+            });
+
+            $("#btn-accept-delete").click(function () {
+                var Parameters = {
+                    Id: parseInt($("#Modelo_Id").val())
+                };
+
+                var response = JSON.parse(CrudTable('@Url.Action("Crud", "TLocation")', "DELETE", Parameters));
+                if (response != undefined) {
+                    if (response.Number != 200) {
+                        $("#Alert").show();
+                        console.log(response.Message);
+                    } else {
+                        location.reload();
+                    }
+                } else {
+                    Modal.hide();
+                }
+            });
+        })
+
+        function Update(item) {
+            var Data = JSON.parse(item.parentElement.firstElementChild.value);
+            $("#Modelo_Id").val(Data.id);
+            $("#Modelo_location").val($.trim(Data.location));
+            $("#TxtLen").text($.trim(Data.name).length);
+            $("#Accion").val(2);
+            $("#NewVendorLabel").text("Update Location");
+            Modal.show();
+        }
+
+        function Delete(item) {
+            var Data = JSON.parse(item.parentElement.firstElementChild.value);
+            $("#Modelo_Id").val(Data.id);
+            $("#Modelo_location").val($.trim(Data.location));
+            $("#nameDelete").text(Data.name);
+            Toast.show();
+        }       
+    </script>
+}
